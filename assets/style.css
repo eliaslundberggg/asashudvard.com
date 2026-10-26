@@ -109,7 +109,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .split .first-mobile { order: -1; } }
 .slider-controls { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .slider-controls .arrows { margin-left: auto; display: flex; gap: 6px; }
-.slide[hidden] { display: none; }
+[hidden] { display: none !important; } /* annars vinner t.ex. .rcard { display: flex } och filtren slutar fungera */
 
 /* Treatments */
 .treat-layout { display: grid; grid-template-columns: 1fr 2fr; gap: clamp(32px, 5vw, 72px); }

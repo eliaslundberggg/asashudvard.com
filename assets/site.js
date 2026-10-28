@@ -2,10 +2,14 @@
 (function () {
   // Mobilmeny
   var mb = document.querySelector(".menu-btn"), mm = document.querySelector(".mobile-menu");
-  if (mb && mm) mb.addEventListener("click", function () {
-    var open = mm.classList.toggle("open");
-    mb.setAttribute("aria-expanded", open);
-  });
+  function setMenu(open) { mm.classList.toggle("open", open); mb.setAttribute("aria-expanded", open); }
+  if (mb && mm) {
+    mb.addEventListener("click", function () { setMenu(!mm.classList.contains("open")); });
+    // Stäng vid val av länk, Escape eller när skärmen blir bred (t.ex. surfplatta vänds)
+    mm.addEventListener("click", function (e) { if (e.target.closest("a")) setMenu(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && mm.classList.contains("open")) { setMenu(false); mb.focus(); } });
+    window.matchMedia("(min-width: 861px)").addEventListener("change", function (q) { if (q.matches) setMenu(false); });
+  }
 
   // Bildspel "Om mig"
   document.querySelectorAll("[data-slider]").forEach(function (root) {

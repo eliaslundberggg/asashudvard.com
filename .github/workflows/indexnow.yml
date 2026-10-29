@@ -1,0 +1,24 @@
+# Anmäler alla sidor i sitemap.xml till Bing (och Yandex, Seznam m.fl.) via IndexNow
+# varje gång sajten uppdateras, så att ändringar syns i sökresultaten snabbare.
+name: IndexNow
+on:
+  push:
+    branches: [main]
+    paths: ["**.html", "sitemap.xml"]
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vänta tills GitHub Pages har publicerat
+        run: sleep 120
+      - name: Skicka sidorna till IndexNow
+        run: |
+          KEY=5dff1fa4fdf111d47c11b15e1c1d4985
+          URLS=$(grep -o '<loc>[^<]*</loc>' sitemap.xml | sed 's/<\/\?loc>//g' | jq -R . | jq -sc .)
+          BODY=$(jq -nc --arg key "$KEY" --argjson urls "$URLS" \
+            '{host:"asashudvard.com", key:$key, keyLocation:("https://asashudvard.com/"+$key+".txt"), urlList:$urls}')
+          echo "$BODY" | jq .
+          curl -sS -o /dev/null -w "IndexNow svarade %{http_code}\n" -X POST https://api.indexnow.org/indexnow \
+            -H "Content-Type: application/json; charset=utf-8" -d "$BODY"
